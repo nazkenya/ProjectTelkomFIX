@@ -22,11 +22,13 @@ import ExecutiveRegionPerformance from '@pages/ExecutiveRegionPerformance'
 import AccountManagerDashboard from '../pages/AccountManagerDashboard'
 import AmProfile from '../pages/accountProfile/AmProfile' // Pastikan path ini benar
 import AMDetail from '../pages/accountProfile/AMDetail'
+import Register from '../pages/Register'
 
 // Define routes and which roles can access them.
 // Add your new role to the arrays below as needed.
 export const routes = [
   { path: '/login', element: <Login />, public: true },
+  { path: '/register', element: <Register />, public: true },
   { path: '/403', element: <NotAuthorized />, public: true },
 
   // Protected routes
