@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/* Optional: emergency gradient utility in case classes fail (can be removed later) */
+.hero-gradient-fallback {
+	background: linear-gradient(135deg, #6366F1, #2E3048 55%, #EC4899);
+}
+
+/* Enforce Sora globally in case Tailwind config isn't picked up immediately */
+html, body {
+  font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root { 
+  --app-scale: 0.9; 
+  --sidebar-w: 220px; 
+} /* 90% */
+
+
+
+/* Chrome/Edge/Safari */
+@supports (zoom: 1) {
+  .app-zoom-90 { zoom: var(--app-scale); }
+}
+
+/* Firefox fallback */
+@supports not (zoom: 1) {
+  .app-zoom-90 {
+    transform: scale(var(--app-scale));
+    transform-origin: top left;
+    width: calc(100% / var(--app-scale));
+  }
+}
+
+/* Optional: keep print at 100% */
+@media print {
+  .app-zoom-90 { zoom: 1; transform: none; width: auto; }
+}

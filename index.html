@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function (m, a, z, e) {
+        var s, t, u, v;
+        try {
+          t = m.sessionStorage.getItem('maze-us');
+        } catch (err) {}
+
+        if (!t) {
+          t = new Date().getTime();
+          try {
+            m.sessionStorage.setItem('maze-us', t);
+          } catch (err) {}
+        }
+
+        u = document.currentScript || (function () {
+          var w = document.getElementsByTagName('script');
+          return w[w.length - 1];
+        })();
+        v = u && u.nonce;
+
+        s = a.createElement('script');
+        s.src = z + '?apiKey=' + e;
+        s.async = true;
+        if (v) s.setAttribute('nonce', v);
+        a.getElementsByTagName('head')[0].appendChild(s);
+        m.mazeUniversalSnippetApiKey = e;
+      })(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '2ec5fbf3-603b-4b35-be47-4d1ce1851608');
+    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Account Management System</title>
+
+  <!-- Sora font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="font-sans bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 text-neutral-800 min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
