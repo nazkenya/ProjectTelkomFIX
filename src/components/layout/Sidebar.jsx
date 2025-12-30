@@ -13,6 +13,7 @@ import {
   FaSignOutAlt,
   FaAddressBook,
   FaCalendarAlt,
+  FaUserTie,
 } from 'react-icons/fa'
 import { useAuth } from '../../auth/AuthContext'
 import { ROLES } from '../../auth/roles'
@@ -31,11 +32,14 @@ const MENU = {
     { to: '/contacts', label: 'Kontak', icon: FaAddressBook },
     { to: '/aktivitas', label: 'Aktivitas', icon: FaCalendarAlt },
     { to: '/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
+    { to: '/profile/am', label: 'Profile AM', icon: FaUserTie }, 
+
   ],
 
   [ROLES.manager]: [
     { to: '/manager', label: 'Dashboard Kinerja', icon: FaChartLine },
     { to: '/manager/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
+    { to: '/profile/am', label: 'Profile AM', icon: FaUserTie }, 
   ],
 };
 

@@ -20,6 +20,8 @@ import SalesPlans from '../pages/SalesPlans'
 import ManagerDashboard from '@pages/ManagerDashboard'
 import ExecutiveRegionPerformance from '@pages/ExecutiveRegionPerformance'
 import AccountManagerDashboard from '../pages/AccountManagerDashboard'
+import AmProfile from '../pages/accountProfile/AmProfile' // Pastikan path ini benar
+import AMDetail from '../pages/accountProfile/AMDetail'
 
 // Define routes and which roles can access them.
 // Add your new role to the arrays below as needed.
@@ -48,4 +50,6 @@ export const routes = [
   { path: '/sales-plans', element: <SalesPlans />, roles: [ROLES.sales] },
   { path: '/executive', element: <ExecutivePerformanceDashboard />, roles: [ROLES.admin] },
   { path: '/executive/region', element: <ExecutiveRegionPerformance />, roles: [ROLES.admin] },
+  { path: '/profile/am', element: <AmProfile />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
+  { path: '/profile/am/detail', element: <AMDetail />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
 ]
