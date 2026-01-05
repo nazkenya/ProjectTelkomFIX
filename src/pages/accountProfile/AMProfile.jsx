@@ -149,12 +149,11 @@ export default function AmProfile() {
         {stats.map((s, i) => <StatsCard key={i} {...s} />)}
       </div>
 
-      {/* ================= APPROVAL CARD (PERSIS GAMBAR) ================= */}
-      {(role === ROLES.manager || role === ROLES.admin) && pendingAMs.length > 0 && (
-        <Card className="bg-white">
+   {/* ================= APPROVAL CARD ================= */}
+      {(ROLES.admin, ROLES.sales, ROLES.manager) && pendingAMs.length > 0 && ( <Card className="bg-white">
           {/* Header */}
           <div className="flex items-start gap-3 mb-6">
-            <div className="mt-1 text-blue-500">
+            <div className="mt-1 text-blue-600">
               <FaCheckCircle />
             </div>
             <div>
@@ -167,7 +166,7 @@ export default function AmProfile() {
             </div>
           </div>
 
-          {/* List */}
+          {/* List Pending */}
           <div className="divide-y divide-neutral-200">
             {pendingAMs.map((am) => {
               const initial = am.nama_am?.charAt(0)?.toUpperCase();
@@ -179,12 +178,10 @@ export default function AmProfile() {
                 >
                   {/* LEFT */}
                   <div className="flex items-center gap-4">
-                    {/* Avatar */}
                     <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-semibold">
                       {initial}
                     </div>
 
-                    {/* Text */}
                     <div>
                       <p className="font-semibold text-neutral-900">
                         {am.nama_am}
@@ -195,11 +192,11 @@ export default function AmProfile() {
                     </div>
                   </div>
 
-                  {/* RIGHT ACTION */}
+                  {/* ACTION */}
                   <div className="flex gap-3">
                     <Button
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                      className="bg-green-600 hover:bg-green-700 text-white px-4"
                       onClick={() =>
                         setPendingAMs((prev) =>
                           prev.filter((x) => x.id_sales !== am.id_sales)
@@ -213,7 +210,7 @@ export default function AmProfile() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-blue-600 text-blue-600 hover:bg-blue-50 px-4"
+                      className="border-red-600 text-red-600 hover:bg-red-50 px-4"
                     >
                       <FaTimesCircle className="mr-2" />
                       Reject
@@ -225,6 +222,7 @@ export default function AmProfile() {
           </div>
         </Card>
       )}
+
       {/* FILTER (LENGKAP, TIDAK HILANG) */}
       <Card>
         <div className="flex items-center gap-2 mb-3">
