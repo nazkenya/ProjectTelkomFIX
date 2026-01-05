@@ -32,14 +32,29 @@ const MENU = {
     { to: '/contacts', label: 'Kontak', icon: FaAddressBook },
     { to: '/aktivitas', label: 'Aktivitas', icon: FaCalendarAlt },
     { to: '/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
-    { to: '/profile/am', label: 'Profile AM', icon: FaUserTie }, 
-
+    {
+      label: 'Account Manager',
+      icon: FaUserTie,
+      subMenu: [
+        { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
+        { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
+      ],
+    },
   ],
 
   [ROLES.manager]: [
     { to: '/manager', label: 'Dashboard Kinerja', icon: FaChartLine },
     { to: '/manager/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
-    { to: '/profile/am', label: 'Profile AM', icon: FaUserTie }, 
+    {
+      label: 'Account Manager',
+      icon: FaUserTie,
+      subMenu: [
+        { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
+        { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
+      ],
+    },
+    
+
   ],
 };
 
