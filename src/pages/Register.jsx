@@ -10,6 +10,7 @@ import {
   FaIdBadge,
 } from 'react-icons/fa'
 import { ALL_ROLES, ROLE_LABELS } from '../auth/roles'
+import Button from '../components/ui/Button'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ export default function Register() {
       return
     }
 
-    // ⛔ sementara dummy (nanti ganti API)
+    // ⛔ dummy (nanti ganti API)
     console.log('REGISTER:', form)
 
     navigate('/login')
@@ -172,15 +173,15 @@ export default function Register() {
             onChange={(v) => update('confirmPassword', v)}
           />
 
-          {/* Submit */}
-          <button
+          {/* REGISTER BUTTON */}
+          <Button
             type="submit"
             disabled={isDisabled}
             className="w-full bg-gradient-to-r from-[#E60012] to-[#B00010] text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-[1.02] transition-all disabled:opacity-50"
           >
             Register
             <FaArrowRight />
-          </button>
+          </Button>
 
           {/* Footer */}
           <div className="pt-3 border-t text-center">
