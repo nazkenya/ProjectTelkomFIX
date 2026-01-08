@@ -1,40 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageHeader from "../../components/ui/PageHeader";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Table from "../../components/ui/Table";
 import { FaEdit } from "react-icons/fa";
 
-/* ====================== DUMMY AM LIST ====================== */
-const DUMMY_AMS = [
-  {
-    ID_SALES: "DUM-001",
-    NIK_AM: "111001",
-    NAMA_AM: "Andi Pratama",
-    TR: "JAKARTA SELATAN",
-    LEVEL_AM: "AM PRO HIRE",
-    notel: "081234567890",
-    email: "andi@telkom.co.id",
-  },
-  {
-    ID_SALES: "DUM-002",
-    NIK_AM: "111002",
-    NAMA_AM: "Bunga Maharani",
-    TR: "BANDUNG",
-    LEVEL_AM: "AM SME",
-    notel: "081298765432",
-    email: "bunga@telkom.co.id",
-  },
-  {
-    ID_SALES: "DUM-003",
-    NIK_AM: "111003",
-    NAMA_AM: "Cahyo Nugroho",
-    TR: "SURABAYA",
-    LEVEL_AM: "AM ORGANIK",
-    notel: "081212345678",
-    email: "cahyo@telkom.co.id",
-  },
-];
+import { getAMs } from "../../services/amService";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 /* ====================== FORM INPUT ====================== */
 function FormInput({ label, id, value, onChange, type = "text", options = [] }) {
@@ -85,7 +58,9 @@ function FormInput({ label, id, value, onChange, type = "text", options = [] }) 
 
 /* ====================== PAGE ====================== */
 export default function AMUpdate() {
-  const [ams] = useState(DUMMY_AMS);
+  const [ams, setAms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [selectedAM, setSelectedAM] = useState(null);
 
   const emptyForm = {
@@ -101,18 +76,29 @@ export default function AMUpdate() {
 
   const [formData, setFormData] = useState(emptyForm);
 
+  /* ====================== LOAD DATA ====================== */
+  useEffect(() => {
+    getAMs()
+      .then((res) => {
+        setAms(Array.isArray(res?.data) ? res.data : []);
+      })
+      .catch(() => setAms([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   /* ====================== HANDLERS ====================== */
   const handleRowClick = (am) => {
     setSelectedAM(am);
+
     setFormData({
       notel: am.notel || "",
       email: am.email || "",
-      level_am: am.LEVEL_AM || "",
-      kel_am: "",
-      tgl_aktif: "",
-      update_perpanjangan_kontrak: "",
-      lama_menjadi_pro_hire: "",
-      ket_out: "",
+      level_am: am.level_am || "",
+      kel_am: am.kel_am || "",
+      tgl_aktif: am.tgl_aktif || "",
+      update_perpanjangan_kontrak: am.update_perpanjangan_kontrak || "",
+      lama_menjadi_pro_hire: am.lama_menjadi_pro_hire || "",
+      ket_out: am.ket_out || "",
     });
   };
 
@@ -126,19 +112,32 @@ export default function AMUpdate() {
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(
-      selectedAM ? "UPDATE AM:" : "INSERT NEW AM:",
-      formData
-    );
+    try {
+      const url = selectedAM
+        ? `${API_BASE}/am/${selectedAM.nik_am}`   // UPDATE
+        : `${API_BASE}/am`;                      // INSERT
 
-    alert(
-      selectedAM
-        ? "Data AM berhasil di-update dan dikirim untuk validasi."
-        : "Data AM baru berhasil di-insert dan menunggu approval."
-    );
+      const method = selectedAM ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Gagal simpan");
+
+      alert(
+        selectedAM
+          ? "Data AM berhasil di-update dan dikirim untuk validasi."
+          : "Data AM baru berhasil di-insert dan menunggu approval."
+      );
+    } catch (err) {
+      alert("Proses gagal. Cek server / jaringan.");
+    }
   };
 
   const handleReset = () => {
@@ -147,11 +146,11 @@ export default function AMUpdate() {
 
   /* ====================== TABLE ====================== */
   const columns = [
-    { key: "ID_SALES", label: "ID SALES" },
-    { key: "NIK_AM", label: "NIK AM" },
-    { key: "NAMA_AM", label: "NAMA AM" },
-    { key: "TR", label: "REGION" },
-    { key: "LEVEL_AM", label: "STATUS AM" },
+    { key: "id_sales", label: "ID SALES" },
+    { key: "nik_am", label: "NIK AM" },
+    { key: "nama_am", label: "NAMA AM" },
+    { key: "tr", label: "REGION" },
+    { key: "am_aktif", label: "STATUS AM" },
   ];
 
   return (
@@ -164,16 +163,15 @@ export default function AMUpdate() {
 
       {/* ================= TABLE AM ================= */}
       <Card>
-        <Table
-          columns={columns}
-          data={ams}
-          onRowClick={handleRowClick}
-        />
+        {loading ? (
+          <p className="text-center py-8 text-gray-500">Memuat data...</p>
+        ) : (
+          <Table columns={columns} data={ams} onRowClick={handleRowClick} />
+        )}
       </Card>
 
       {/* ================= FORM ================= */}
       <Card>
-        {/* HEADER FORM */}
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-lg">
@@ -181,7 +179,7 @@ export default function AMUpdate() {
             </h3>
             {selectedAM && (
               <p className="text-sm text-neutral-500">
-                Editing: <b>{selectedAM.NAMA_AM}</b> ({selectedAM.NIK_AM})
+                Editing: <b>{selectedAM.nama_am}</b> ({selectedAM.nik_am})
               </p>
             )}
           </div>
@@ -195,6 +193,7 @@ export default function AMUpdate() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput label="No. Telp" id="notel" value={formData.notel} onChange={handleChange} />
             <FormInput label="Email" id="email" value={formData.email} onChange={handleChange} />
+
             <FormInput label="Level AM" id="level_am" value={formData.level_am} onChange={handleChange} />
 
             <FormInput
@@ -243,7 +242,6 @@ export default function AMUpdate() {
             />
           </div>
 
-          {/* ACTIONS */}
           <div className="flex justify-end gap-4 pt-6 border-t">
             <Button type="button" variant="ghost" onClick={handleReset}>
               Reset

@@ -1,18 +1,37 @@
-// src/services/amService.js
-import axios from "axios";
+import { fetchAMList, fetchAMDetail } from "./amRepository";
 
-const api = axios.create({
-  baseURL: "http://localhost:8000/api", // ganti sesuai URL backend Laravel kamu
-});
-
-// Fungsi ambil data AM
-export async function getAMs() {
+/**
+ * getAMs
+ * - kompatibel dengan EcrmWorkspace
+ * - return { data: [...] }
+ */
+export async function getAMs(fields = []) {
   try {
-    const response = await api.get("/am"); // pastikan route Laravel kamu: Route::get('/ams', ...)
-    console.log("✅ Data AM dari backend:", response.data);
-    return response.data;
+    const res = await fetchAMList(fields);
+
+    // 🔑 normalize response
+    if (Array.isArray(res)) {
+      return { data: res };
+    }
+
+    if (res && Array.isArray(res.data)) {
+      return res;
+    }
+
+    // fallback keras
+    return { data: [] };
   } catch (error) {
-    console.error("❌ Gagal fetch data AM:", error);
-    return [];
+    console.error("❌ Gagal fetch AM:", error);
+    return { data: [] };
+  }
+}
+
+export async function getAMByNik(nik) {
+  try {
+    const res = await fetchAMDetail(nik);
+    return res?.data ?? res ?? null;
+  } catch (error) {
+    console.error("❌ Gagal fetch detail AM:", error);
+    return null;
   }
 }

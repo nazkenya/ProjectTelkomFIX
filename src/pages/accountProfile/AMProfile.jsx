@@ -23,12 +23,7 @@ import PageHeader from "../../components/ui/PageHeader";
 import { useAuth } from "../../auth/AuthContext";
 import { ROLES } from "../../auth/roles";
 
-/* ====================== DUMMY FALLBACK ====================== */
-const DUMMY_AMS = [
-  { ID_SALES: "DUM-001", NIK_AM: "111001", NAMA_AM: "Andi Pratama", TR: "JAKARTA SELATAN", LEVEL_AM: "AM PRO HIRE" },
-  { ID_SALES: "DUM-002", NIK_AM: "111002", NAMA_AM: "Bunga Maharani", TR: "BANDUNG", LEVEL_AM: "AM SME" },
-  { ID_SALES: "DUM-003", NIK_AM: "111003", NAMA_AM: "Cahyo Nugroho", TR: "SURABAYA", LEVEL_AM: "AM ORGANIK" },
-];
+
 
 const AM_STATUS_OPTIONS = [
   "AM PRO HIRE",
@@ -65,18 +60,20 @@ export default function AmProfile() {
   const getFieldValue = (row, key) =>
     row?.[key] ?? row?.[key.toUpperCase()] ?? row?.[key.toLowerCase()] ?? "";
 
+   const isAktif = (row) => {
+    const status = getFieldValue(row, "AM_AKTIF");
+    return String(status).toUpperCase() === "AKTIF";
+  };
+
   /* ====================== FETCH (600+ ROW AMAN) ====================== */
   useEffect(() => {
     setLoading(true);
+
     getAMs(["id_sales", "nik_am", "nama_am", "tr", "level_am", "am_aktif"])
       .then((res) => {
-        if (Array.isArray(res?.data) && res.data.length > 0) {
-          setAms(res.data); // 🔥 TIDAK DIPOTONG
-        } else {
-          setAms(DUMMY_AMS);
-        }
+        setAms(Array.isArray(res?.data) ? res.data : []);
       })
-      .catch(() => setAms(DUMMY_AMS))
+      .catch(() => setAms([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -87,10 +84,10 @@ export default function AmProfile() {
       const nik = getFieldValue(m, "NIK_AM").toLowerCase();
       const id = getFieldValue(m, "ID_SALES").toLowerCase();
       const region = getFieldValue(m, "TR");
-      const levelAm = getFieldValue(m, "LEVEL_AM");
+      const kelAm = getFieldValue(m, "KEL_AM");
 
       if (filter.region && region !== filter.region) return false;
-      if (filter.levelAm && levelAm !== filter.levelAm) return false;
+      if (filter.kelAm && kelAm !== filter.kelAm) return false;
 
       if (filter.q) {
         const q = filter.q.toLowerCase();
@@ -106,12 +103,15 @@ export default function AmProfile() {
   const endIndex = Math.min(startIndex + rowsPerPage, total);
   const pageRows = filtered.slice(startIndex, endIndex);
 
+  const totalActiveAM = useMemo(() => {
+    return filtered.filter(isAktif).length;
+  }, [filtered]);
   /* ====================== STATS ====================== */
   const regions = [...new Set(ams.map((m) => getFieldValue(m, "TR")).filter(Boolean))];
 
   const stats = [
-    { label: "Jumlah AM (Hasil Filter)", value: filtered.length.toLocaleString(), icon: FaUsers },
-    { label: "Total Active AM", value: filtered.length.toLocaleString(), icon: FaUserTie },
+    { label: "Total AM", value: filtered.length.toLocaleString(), icon: FaUsers },
+    { label: "Total Active AM", value: totalActiveAM.toLocaleString(), icon: FaUserTie },
     { label: "Regions", value: regions.length.toString(), icon: FaMapMarkerAlt },
   ];
 
@@ -136,7 +136,8 @@ export default function AmProfile() {
       },
     },
     { key: "TR", label: "REGION", render: (r) => getFieldValue(r, "TR") },
-    { key: "LEVEL_AM", label: "STATUS AM", render: (r) => getFieldValue(r, "LEVEL_AM") },
+    { key: "AM_AKTIF", label: "STATUS AM", render: (r) => getFieldValue(r, "AM_AKTIF") },
+    { key: "KEL_AM", label: "KEL AM", render: (r) => getFieldValue(r, "KEL_AM") },
   ];
 
   /* ====================== RENDER ====================== */
@@ -242,7 +243,7 @@ export default function AmProfile() {
             {regions.map((r) => <option key={r}>{r}</option>)}
           </Select>
 
-          <Select value={filter.levelAm} onChange={(e) => setFilter((s) => ({ ...s, levelAm: e.target.value }))}>
+          <Select value={filter.kelAm} onChange={(e) => setFilter((s) => ({ ...s, kelAm: e.target.value }))}>
             <option value="">All Status AM</option>
             {AM_STATUS_OPTIONS.map((s) => <option key={s}>{s}</option>)}
           </Select>

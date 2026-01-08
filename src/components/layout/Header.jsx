@@ -6,12 +6,18 @@ import mockNotifications from '../../data/mockNotifications'
 
 export default function Header() {
   const { user, role } = useAuth()
+
+  const displayName = user?.nama_lengkap || user?.name || 'Guest'
+  const initial = displayName?.charAt(0)?.toUpperCase() || 'G'
+
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState([])
   const panelRef = useRef(null)
   const bellRef = useRef(null)
 
-  const isNotificationRole = role === ROLES.manager || role === ROLES.admin || role === ROLES.sales
+  const isNotificationRole =
+    role === ROLES.manager || role === ROLES.admin || role === ROLES.sales
+
   const roleLabel = role ? (ROLE_LABELS[role] || role) : null
 
   useEffect(() => {
@@ -19,15 +25,18 @@ export default function Header() {
       const feed = mockNotifications
         .filter((notif) => notif.roles.includes(role))
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+
       setNotifications(feed)
     } else {
       setNotifications([])
     }
+
     setShowNotifications(false)
   }, [role, isNotificationRole])
 
   useEffect(() => {
     if (!showNotifications) return
+
     const handleClickOutside = (event) => {
       if (
         panelRef.current &&
@@ -38,21 +47,32 @@ export default function Header() {
         setShowNotifications(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showNotifications])
 
-  const unreadCount = useMemo(() => notifications.filter((notif) => !notif.isRead).length, [notifications])
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.isRead).length,
+    [notifications]
+  )
 
   const formatTimestamp = (ts) =>
-    new Date(ts).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+    new Date(ts).toLocaleString('id-ID', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
 
   const handleMarkAsRead = (id) => {
-    setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif)))
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === id ? { ...notif, isRead: true } : notif
+      )
+    )
   }
 
   const handleMarkAll = () => {
-    setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })))
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
   }
 
   return (
@@ -62,9 +82,11 @@ export default function Header() {
         <div className="relative">
           <button
             ref={bellRef}
-            onClick={() => isNotificationRole && setShowNotifications((prev) => !prev)}
+            onClick={() => isNotificationRole && setShowNotifications((p) => !p)}
             className={`relative p-2 rounded-lg transition-colors duration-200 group ${
-              isNotificationRole ? 'hover:bg-neutral-100' : 'opacity-40 cursor-not-allowed'
+              isNotificationRole
+                ? 'hover:bg-neutral-100'
+                : 'opacity-40 cursor-not-allowed'
             }`}
             aria-label="Notifications"
           >
@@ -81,9 +103,13 @@ export default function Header() {
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">Notifikasi</p>
+                  <p className="text-sm font-semibold text-neutral-900">
+                    Notifikasi
+                  </p>
                   <p className="text-xs text-neutral-500">
-                    {unreadCount > 0 ? `${unreadCount} belum dibaca` : 'Semua notifikasi telah dibaca'}
+                    {unreadCount > 0
+                      ? `${unreadCount} belum dibaca`
+                      : 'Semua notifikasi telah dibaca'}
                   </p>
                 </div>
                 <button
@@ -93,9 +119,12 @@ export default function Header() {
                   Tandai semua
                 </button>
               </div>
+
               <div className="max-h-80 overflow-auto">
                 {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-sm text-neutral-500">Belum ada notifikasi</div>
+                  <div className="p-6 text-center text-sm text-neutral-500">
+                    Belum ada notifikasi
+                  </div>
                 ) : (
                   notifications.map((notif) => (
                     <button
@@ -106,11 +135,19 @@ export default function Header() {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-neutral-900">{notif.title}</p>
-                        {!notif.isRead && <span className="w-2 h-2 rounded-full bg-[#2C5CC5]" />}
+                        <p className="text-sm font-semibold text-neutral-900">
+                          {notif.title}
+                        </p>
+                        {!notif.isRead && (
+                          <span className="w-2 h-2 rounded-full bg-[#2C5CC5]" />
+                        )}
                       </div>
-                      <p className="text-xs text-neutral-500 mt-0.5">{formatTimestamp(notif.timestamp)}</p>
-                      <p className="text-sm text-neutral-700 mt-1">{notif.message}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        {formatTimestamp(notif.timestamp)}
+                      </p>
+                      <p className="text-sm text-neutral-700 mt-1">
+                        {notif.message}
+                      </p>
                     </button>
                   ))
                 )}
@@ -122,18 +159,19 @@ export default function Header() {
         {/* User Profile */}
         <div className="flex items-center gap-3 pl-3 border-l border-neutral-200">
           <div className="w-10 h-10 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[#2E3048] font-semibold text-sm ring-1 ring-neutral-200 shadow-sm">
-            {user?.name?.charAt(0) || 'G'}
+            {initial}
           </div>
+
           <div className="text-sm">
-            <div className="font-semibold text-neutral-800">{user?.name || 'Guest'}</div>
+            <div className="font-semibold text-neutral-800">{displayName}</div>
+
             {roleLabel && (
               <div className="text-xs text-neutral-500 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71]"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71]" />
                 {roleLabel}
               </div>
             )}
           </div>
-          {/* Logout removed from header; now located in the sidebar */}
         </div>
       </div>
     </header>

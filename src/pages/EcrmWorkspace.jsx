@@ -1,4 +1,3 @@
-// EcrmWorkspace.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   FaUserTie,
@@ -39,10 +38,8 @@ export default function EcrmWorkspace() {
   const clearTimeoutRef = useRef(null);
   const prevYRef = useRef(0);
 
-  // constant for "no region"
   const NO_REGION_VALUE = "__NO_REGION__";
 
-  // POPOVER FIELDS
   const POPOVER_FIELDS = [
     { key: "notel", label: "No. Telp" },
     { key: "email", label: "Email" },
@@ -55,126 +52,79 @@ export default function EcrmWorkspace() {
     { key: "ket_out", label: "Keterangan Out" },
   ];
 
-  // --- helper: baca value field dengan berbagai casing
   const getFieldValue = (row, key) => {
     if (!row) return "";
-    if (Object.prototype.hasOwnProperty.call(row, key)) return row[key];
-    if (Object.prototype.hasOwnProperty.call(row, key.toUpperCase())) return row[key.toUpperCase()];
-    if (Object.prototype.hasOwnProperty.call(row, key.toLowerCase())) return row[key.toLowerCase()];
+    if (row[key] !== undefined) return row[key];
+    if (row[key.toUpperCase()] !== undefined) return row[key.toUpperCase()];
+    if (row[key.toLowerCase()] !== undefined) return row[key.toLowerCase()];
     return "";
   };
 
-  // Fetch data
-  useEffect(() => {
+    useEffect(() => {
     setLoading(true);
 
-    const tableCols = ["id_sales", "nik_am", "nama_am", "tr", "witel"];
+    const tableCols = ["id_sales", "nik_am", "nama_am", "tr", "witel", "am_aktif"];
     const popCols = POPOVER_FIELDS.map((f) => f.key);
-    const fields = Array.from(
-      new Set([...tableCols, ...popCols, "am_aktif_posisi_oktober_2025"])
-    ); // include active flag
+    const fields = Array.from(new Set([...tableCols, ...popCols]));
 
     getAMs(fields)
-      .then((data) => {
-        if (data && Array.isArray(data.data)) {
-          setAms(data.data);
-        } else {
-          setAms(Array.isArray(data) ? data : []);
-        }
+      .then((res) => {
+        const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        setAms(data);
       })
-      .catch((err) => {
-        console.error("Gagal fetch data AM:", err);
-        setAms([]);
-      })
+      .catch(() => setAms([]))
       .finally(() => setLoading(false));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
-  // Unique lists (regions + witels)
-  const regions = useMemo(() => {
-    const list = ams
-      .map((m) => {
-        // prefer uppercase DB keys if present, fallback lower
-        const v = getFieldValue(m, "TR") ?? getFieldValue(m, "tr") ?? "";
-        return String(v ?? "").trim();
-      })
-      // hanya region valid (buang null/"null"/"undefined"/empty)
-      .filter((v) => v && v.toLowerCase() !== "null" && v.toLowerCase() !== "undefined");
-    return [...new Set(list)].sort((a, b) => a.localeCompare(b, "id"));
-  }, [ams]);
+    const regions = useMemo(() => {
+      return [...new Set(
+        ams.map((m) => String(getFieldValue(m, "TR") || "").trim()).filter(Boolean)
+      )].sort();
+    }, [ams]);
 
-  const witels = useMemo(() => {
-    const list = ams
-      .map((m) => {
-        const v = getFieldValue(m, "WITEL") ?? getFieldValue(m, "witel") ?? "";
-        return String(v ?? "").trim();
-      })
-      .filter((v) => v && v.toLowerCase() !== "null" && v.toLowerCase() !== "undefined");
-    return [...new Set(list)].sort((a, b) => a.localeCompare(b, "id"));
-  }, [ams]);
+    const witels = useMemo(() => {
+      return [...new Set(
+        ams.map((m) => String(getFieldValue(m, "WITEL") || "").trim()).filter(Boolean)
+      )].sort();
+    }, [ams]);
 
-  // Filtering
+    // ================= FILTERING (FINAL FIX) =================
   const filtered = useMemo(() => {
     return ams.filter((m) => {
-      const regionRaw = getFieldValue(m, "TR") ?? getFieldValue(m, "tr") ?? "";
-      const region = String(regionRaw ?? "").trim();
-      const witelRaw = getFieldValue(m, "WITEL") ?? getFieldValue(m, "witel") ?? "";
-      const witel = String(witelRaw ?? "").trim();
-      const nama = getFieldValue(m, "NAMA_AM") ?? getFieldValue(m, "nama_am") ?? "";
-      const nik = getFieldValue(m, "NIK_AM") ?? getFieldValue(m, "nik_am") ?? "";
-      const id = getFieldValue(m, "ID_SALES") ?? getFieldValue(m, "id_sales") ?? "";
+      const region = String(getFieldValue(m, "TR") || "").trim();
+      const witel = String(getFieldValue(m, "WITEL") || "").trim();
+      const nama = String(getFieldValue(m, "NAMA_AM") || "");
+      const nik = String(getFieldValue(m, "NIK_AM") || "");
+      const id = String(getFieldValue(m, "ID_SALES") || "");
 
-      // ambil nilai flag aktif (coba beberapa variasi key)
-      const rawActive =
-        getFieldValue(m, "AM_AKTIF_POSISI_OKTOBER_2025") ??
-        getFieldValue(m, "am_aktif_posisi_oktober_2025") ??
-        getFieldValue(m, "AM_AKTIF") ??
-        getFieldValue(m, "am_aktif") ??
-        "";
+      const rawStatus = getFieldValue(m, "AM_AKTIF");
+      const status = rawStatus ? String(rawStatus).trim().toUpperCase() : "NULL";
 
-      const activeNormalized = String(rawActive).trim().toLowerCase(); // mis. "AKTIF" -> "aktif"
+      const IS_AKTIF = status === "AKTIF";
 
-      // filter by region
       if (filter.region) {
         if (filter.region === NO_REGION_VALUE) {
-          // pilih baris yang TR kosong / 'null' / 'undefined'
-          const rv = String(region ?? "").trim().toLowerCase();
-          if (rv !== "" && rv !== "null" && rv !== "undefined") return false;
-        } else {
-          if (region !== filter.region) return false;
-        }
+          if (region) return false;
+        } else if (region !== filter.region) return false;
       }
 
-      // filter by witel
       if (filter.witel && witel !== filter.witel) return false;
 
-      // filter status: "" (all), "aktif", "non_aktif"
-      if (
-        filter.status === "aktif" &&
-        !["aktif", "y", "yes", "1", "true", "active", "ya"].includes(activeNormalized)
-      ) {
-        return false;
-      }
-      if (
-        filter.status === "non_aktif" &&
-        ["aktif", "y", "yes", "1", "true", "active", "ya"].includes(activeNormalized)
-      ) {
-        return false;
-      }
+      if (filter.status === "aktif" && !IS_AKTIF) return false;
+      if (filter.status === "non_aktif" && IS_AKTIF) return false;
 
-      // text search
       if (filter.q) {
         const q = filter.q.toLowerCase();
-        return (
-          id?.toString().toLowerCase().includes(q) ||
-          nik?.toString().toLowerCase().includes(q) ||
-          nama?.toString().toLowerCase().includes(q)
-        );
+        if (
+          !id.toLowerCase().includes(q) &&
+          !nik.toLowerCase().includes(q) &&
+          !nama.toLowerCase().includes(q)
+        ) return false;
       }
 
       return true;
     });
-  }, [filter, ams]);
-
+  }, [ams, filter]);
   // Pagination
   const total = filtered.length;
   const startIndex = (page - 1) * rowsPerPage;
@@ -204,17 +154,12 @@ export default function EcrmWorkspace() {
   ];
 
   // Hitung hanya AM yang aktif (berdasarkan kolom AM_AKTIF_POSISI_OKTOBER_2025)
-  const activeFilteredCount = filtered.filter((r) => {
-    const val =
-      getFieldValue(r, "AM_AKTIF_POSISI_OKTOBER_2025") ??
-      getFieldValue(r, "am_aktif_posisi_oktober_2025") ??
-      getFieldValue(r, "AM_AKTIF") ??
-      getFieldValue(r, "am_aktif");
-
-    if (val === undefined || val === null) return false;
-    const s = String(val).trim().toLowerCase();
-    return ["y", "yes", "1", "true", "active", "aktif", "ya"].includes(s);
-  }).length;
+  const activeFilteredCount = useMemo(() => {
+    return ams.filter((m) => {
+      const raw = getFieldValue(m, "AM_AKTIF");
+      return raw && String(raw).trim().toUpperCase() === "AKTIF";
+    }).length;
+  }, [ams]);
 
   // Stats (gunakan activeFilteredCount)
   const stats = [

@@ -24,6 +24,8 @@ import AmProfile from '../pages/accountProfile/AmProfile' // Pastikan path ini b
 import AMDetail from '../pages/accountProfile/AMDetail'
 import Register from '../pages/Register'
 import AMUpdate from '../pages/accountProfile/AMUpdate'
+import AdminApproval from "../pages/AdminApproval";
+import ManagerApproval from "../pages/ManagerApproval";
 
 // Define routes and which roles can access them.
 // Add your new role to the arrays below as needed.
@@ -56,4 +58,7 @@ export const routes = [
   { path: '/profile/am', element: <AmProfile />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/detail', element: <AMDetail />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/update', element: <AMUpdate />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
+  // --- APPROVAL SYSTEM ---
+  { path: '/admin/approval', element: <AdminApproval />, roles: [ROLES.admin] },
+  { path: '/manager/approval', element: <ManagerApproval />, roles: [ROLES.manager, ROLES.admin] },
 ]
