@@ -1,29 +1,29 @@
-import React from 'react'
-import CustomersPage from '../pages/CustomersPage'
-import CustomerDetail from '../pages/CustomerDetail'
-import Dashboard from '../pages/Dashboard'
-import NotAuthorized from '../pages/NotAuthorized'
-import Login from '../pages/Login'
-import EcrmWorkspace from '../pages/EcrmWorkspace'
-import ValidationPage from '../pages/ValidationPage'
-import AccountProfile from '../pages/AccountProfile'
-import SalesPlanDetail from '../pages/SalesPlanDetail'
-import { ROLES } from '../auth/roles'
-import AccountManagers from '../pages/AccountManagers'
-import ContactManagement from '../pages/ContactManagement'
-import ContactDetail from '../pages/ContactDetail'
-import ActivitiesPage from '../pages/ActivitiesPage'
-import ManagerPerformanceDashboard from '../pages/ManagerPerformanceDashboard'
-import ExecutivePerformanceDashboard from '../pages/ExecutivePerformanceDashboard'
-import ManagerSalesPlans from '../pages/ManagerSalesPlans'
-import SalesPlans from '../pages/SalesPlans'
-import ManagerDashboard from '@pages/ManagerDashboard'
 import ExecutiveRegionPerformance from '@pages/ExecutiveRegionPerformance'
+import { ROLES } from '../auth/roles'
 import AccountManagerDashboard from '../pages/AccountManagerDashboard'
-import AmProfile from '../pages/accountProfile/AmProfile' // Pastikan path ini benar
+import AccountManagers from '../pages/AccountManagers'
+import AccountProfile from '../pages/AccountProfile'
 import AMDetail from '../pages/accountProfile/AMDetail'
-import Register from '../pages/Register'
+import AmProfile from '../pages/accountProfile/AmProfile'; // Pastikan path ini benar
 import AMUpdate from '../pages/accountProfile/AMUpdate'
+import ActivitiesPage from '../pages/ActivitiesPage'
+import ContactDetail from '../pages/ContactDetail'
+import ContactManagement from '../pages/ContactManagement'
+import GuidanceDetailPage from '../pages/CsgWorkspace/7-guidance'
+import CustomerCsgDetail from '../pages/CsgWorkspace/CustomerCsgDetail'
+import CustomerView from '../pages/CsgWorkspace/CustomerView'
+import CustomerDetail from '../pages/CustomerDetail'
+import CustomersPage from '../pages/CustomersPage'
+import EcrmWorkspace from '../pages/EcrmWorkspace'
+import ExecutivePerformanceDashboard from '../pages/ExecutivePerformanceDashboard'
+import Login from '../pages/Login'
+import ManagerPerformanceDashboard from '../pages/ManagerPerformanceDashboard'
+import ManagerSalesPlans from '../pages/ManagerSalesPlans'
+import NotAuthorized from '../pages/NotAuthorized'
+import Register from '../pages/Register'
+import SalesPlanDetail from '../pages/SalesPlanDetail'
+import SalesPlans from '../pages/SalesPlans'
+import ValidationPage from '../pages/ValidationPage'
 
 // Define routes and which roles can access them.
 // Add your new role to the arrays below as needed.
@@ -56,4 +56,8 @@ export const routes = [
   { path: '/profile/am', element: <AmProfile />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/detail', element: <AMDetail />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/update', element: <AMUpdate />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
+  // CSG pages
+  { path: '/CSG', element: <CustomerView />, roles: [ROLES.sales] },
+  { path: '/CSG/:id', element: <CustomerCsgDetail />, roles: [ROLES.sales] },
+  { path: '/CSG/:id/7-guidance', element: <GuidanceDetailPage />, roles: [ROLES.sales] },
 ]

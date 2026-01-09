@@ -40,6 +40,7 @@ const MENU = {
         { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
       ],
     },
+    { to: '/CSG', label: 'CSG', icon: FaUsers }
   ],
 
   [ROLES.manager]: [
