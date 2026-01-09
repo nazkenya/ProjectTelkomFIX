@@ -5,7 +5,7 @@ import {
   FaEnvelope, FaPhone, FaIdBadge
 } from "react-icons/fa";
 import Button from "../components/ui/Button";
-import { getManagers, register } from "../services/authService";
+import { getManagers, register } from "../services/registerService";
 
 export default function Register() {
 
