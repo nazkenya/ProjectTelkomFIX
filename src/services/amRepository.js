@@ -11,6 +11,16 @@ export function fetchAMList(fields = []) {
   return api(`/am${params}`);
 }
 
-export function fetchAMDetail(nik) {
-  return api(`/am/${nik}`);
+export function fetchAMDetail(param) {
+  // backward compatible
+  if (typeof param === "string") {
+    return api.get(`/am/detail?nik=${param}`);
+  }
+
+  // new flexible mode
+  const params = new URLSearchParams();
+  if (param?.nik) params.append("nik", param.nik);
+  if (param?.idSales) params.append("idsales", param.idSales);
+
+  return api.get(`/am/detail?${params.toString()}`);
 }

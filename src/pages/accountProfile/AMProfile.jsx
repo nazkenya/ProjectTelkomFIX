@@ -27,11 +27,12 @@ import { ROLES } from "../../auth/roles";
 
 const AM_STATUS_OPTIONS = [
   "AM PRO HIRE",
-  "AM PRO HIRE MD",
   "AM SME",
   "AM ORGANIK",
   "AM ORGANIK MD",
 ];
+
+const AM_AKTIF_OPTIONS = ["AKTIF", "NON AKTIF","HOLD"];
 
 export default function AmProfile() {
   /* ====================== STATE ====================== */
@@ -43,6 +44,7 @@ export default function AmProfile() {
     region: "",
     levelAm: "",
     status: "",
+    amAktif: "",
   });
 
   const [page, setPage] = useState(1);
@@ -61,7 +63,7 @@ export default function AmProfile() {
     row?.[key] ?? row?.[key.toUpperCase()] ?? row?.[key.toLowerCase()] ?? "";
 
    const isAktif = (row) => {
-    const status = getFieldValue(row, "AM_AKTIF");
+    const status = getFieldValue(row, "am_aktif");
     return String(status).toUpperCase() === "AKTIF";
   };
 
@@ -69,7 +71,7 @@ export default function AmProfile() {
   useEffect(() => {
     setLoading(true);
 
-    getAMs(["id_sales", "nik_am", "nama_am", "tr", "level_am", "am_aktif"])
+    getAMs(["id_sales", "nik_am", "nama_am", "tr", "level_am", "am_aktif","last_update","telda","loc_kerja_am"])
       .then((res) => {
         setAms(Array.isArray(res?.data) ? res.data : []);
       })
@@ -80,18 +82,23 @@ export default function AmProfile() {
   /* ====================== FILTER ====================== */
   const filtered = useMemo(() => {
     return ams.filter((m) => {
-      const nama = getFieldValue(m, "NAMA_AM").toLowerCase();
-      const nik = getFieldValue(m, "NIK_AM").toLowerCase();
-      const id = getFieldValue(m, "ID_SALES").toLowerCase();
-      const region = getFieldValue(m, "TR");
-      const kelAm = getFieldValue(m, "KEL_AM");
+      const nama = getFieldValue(m, "nama_am").toLowerCase();
+      const nik = getFieldValue(m, "nik_am").toLowerCase();
+      const id = getFieldValue(m, "id_sales").toLowerCase();
+      const region = getFieldValue(m, "tr");
+      const kelAm = getFieldValue(m, "kel_am");
 
       if (filter.region && region !== filter.region) return false;
       if (filter.kelAm && kelAm !== filter.kelAm) return false;
 
+      if (filter.amAktif) {
+        const status = String(getFieldValue(m, "am_aktif")).toUpperCase();
+        if (status !== filter.amAktif) 
+          return false;
+      }
       if (filter.q) {
         const q = filter.q.toLowerCase();
-        return nama.includes(q) || nik.includes(q) || id.includes(q);
+          return nama.includes(q) || nik.includes(q) || id.includes(q);
       }
       return true;
     });
@@ -117,16 +124,17 @@ export default function AmProfile() {
 
   /* ====================== TABLE ====================== */
   const columns = [
-    { key: "ID_SALES", label: "ID SALES", render: (r) => getFieldValue(r, "ID_SALES") },
-    { key: "NIK_AM", label: "NIK AM", render: (r) => getFieldValue(r, "NIK_AM") },
+    { key: "id_sales", label: "ID SALES", render: (r) => getFieldValue(r, "id_sales") },
+    { key: "nik_am", label: "NIK AM", render: (r) => getFieldValue(r, "nik_am") },
     {
-      key: "NAMA_AM",
+      key: "nama_am",
       label: "NAMA AM",
       render: (row) => {
-        const nama = getFieldValue(row, "NAMA_AM");
-        const nik = getFieldValue(row, "NIK_AM");
+        const nama = getFieldValue(row, "nama_am");
+        const nik = getFieldValue(row, "nik_am");
+        const idSales = getFieldValue(row, "id_sales");
         return (
-          <Link to={`/profile/am/detail?nik=${nik}`} className="flex items-center gap-2 hover:text-[#7C3AED]">
+          <Link to={`/profile/am/detail?nik=${nik}&idsales=${idSales}`} className="flex items-center gap-2 hover:text-[#7C3AED]">
             <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center font-semibold text-xs">
               {nama?.charAt(0)}
             </div>
@@ -135,9 +143,12 @@ export default function AmProfile() {
         );
       },
     },
-    { key: "TR", label: "REGION", render: (r) => getFieldValue(r, "TR") },
-    { key: "AM_AKTIF", label: "STATUS AM", render: (r) => getFieldValue(r, "AM_AKTIF") },
-    { key: "KEL_AM", label: "KEL AM", render: (r) => getFieldValue(r, "KEL_AM") },
+    { key: "tr", label: "REGION", render: (r) => getFieldValue(r, "tr") },
+    {key: "loc_kerja_am", label: "LOKASI KERJA AM", render: (r) => getFieldValue(r, "loc_kerja_am") },
+    { key: "telda", label: "TELDA", render: (r) => getFieldValue(r, "telda") },
+    { key: "am_aktif", label: "STATUS AM", render: (r) => getFieldValue(r, "am_aktif") },
+    { key: "kel_am", label: "KEL AM", render: (r) => getFieldValue(r, "kel_am") },
+    { key: "last_update", label: "LAST UPDATE", render: (r) => getFieldValue(r, "last_update") },
   ];
 
   /* ====================== RENDER ====================== */
@@ -224,19 +235,29 @@ export default function AmProfile() {
         </Card>
       )}
 
-      {/* FILTER (LENGKAP, TIDAK HILANG) */}
       <Card>
         <div className="flex items-center gap-2 mb-3">
           <FaFilter className="text-red-600" />
           <h2 className="font-semibold">Filter Data AM (Semua)</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <SearchInput
             value={filter.q}
             onChange={(v) => setFilter((s) => ({ ...s, q: v }))}
             placeholder="Search ID, NIK or Name..."
           />
+          <Select
+            value={filter.amAktif}
+            onChange={(e) =>
+              setFilter((s) => ({ ...s, amAktif: e.target.value }))
+            }
+          >
+            <option value="">All Status AM</option>
+            {AM_AKTIF_OPTIONS.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </Select>
 
           <Select value={filter.region} onChange={(e) => setFilter((s) => ({ ...s, region: e.target.value }))}>
             <option value="">All Regions</option>
@@ -244,7 +265,7 @@ export default function AmProfile() {
           </Select>
 
           <Select value={filter.kelAm} onChange={(e) => setFilter((s) => ({ ...s, kelAm: e.target.value }))}>
-            <option value="">All Status AM</option>
+            <option value="">All Kel AM</option>
             {AM_STATUS_OPTIONS.map((s) => <option key={s}>{s}</option>)}
           </Select>
         </div>

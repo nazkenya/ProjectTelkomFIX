@@ -12,6 +12,7 @@ export default function AMDetail() {
   const navigate = useNavigate(); 
   const [searchParams] = useSearchParams();
   const nikAm = searchParams.get("nik");
+  const idSales = searchParams.get("idsales");
 
   const [am, setAm] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,58 +22,98 @@ export default function AMDetail() {
   const getVal = (key) => am?.[key] ?? "-";
 
   useEffect(() => {
-    if (!nikAm) {
+  if (!nikAm && !idSales) {
+    setNotFound(true);
+    setLoading(false);
+    return;
+  }
+
+  const FIELDS = [
+    /* PROFILE */
+    "link_foto_am",
+    "id_sales",
+    "nik_am",
+    "nama_am",
+    "witel",
+    "tr",
+    "level_am",
+    "loc_kerja_am",
+    "telda",
+    "kel_am",
+
+    /* KONTAK & PERSONAL */
+    "email",
+    "notel",
+    "gender",
+    "tgl_lahir",
+    "usia_thn_bln_hr",
+    "kel_usia",
+
+    /* STATUS PEKERJAAN */
+    "am_aktif",
+    "tgl_aktif",
+    "tgl_akhr_pro_hire",
+    "tgl_aktif_pro_hire",
+    "lama_jadi_pro_hire",
+    "tgl_out_sebagai_am",
+    "ket_out",
+
+    /* ASET & FASILITAS */
+    "laptop",
+    "cek_laptop",
+    "nomor_cc",
+    "ket_cc",
+    "baju_telkom",
+    "size_baju",
+    "size_jaket",
+
+    /* INFORMASI PENDIDIKAN */
+    "pendidikan",
+    "jurusan",
+    "universitas",
+    "tahun_lulus",
+
+    /* INFORMASI TAMBAHAN */
+    "sertf_train_ext",
+    "link_evid_train_ext",
+    "hobi",
+    "bakat",
+    "perner_ish_amex_only",
+    "tgl_nik_telkom_amex",
+    "last_update"
+  ];
+
+  setLoading(true);
+  setNotFound(false);
+
+  getAMs(FIELDS)
+    .then((res) => {
+      const data = Array.isArray(res?.data) ? res.data : [];
+
+      const found = data.find((r) => {
+        if (nikAm) {
+          return String(r.nik_am) === String(nikAm);
+        }
+        if (idSales) {
+          return String(r.id_sales) === String(idSales);
+        }
+        return false;
+      });
+
+      if (!found) {
+        setNotFound(true);
+        setAm(null);
+      } else {
+        setAm(found);
+      }
+    })
+    .catch(() => {
       setNotFound(true);
-      setLoading(false);
-      return;
-    }
+      setAm(null);
+    })
+    .finally(() => setLoading(false));
+}, [nikAm, idSales]);
 
-    const FIELDS = [
-      "id_sales",
-      "nik_am",
-      "nama_am",
-      "witel",
-      "tr",
-      "level_am",
-      "bp",
-      "kel_am",
-      "email",
-      "notel",
-      "gender",
-      "tgl_lahir",
-      "usia_tahun",
-      "usia_tahun_bulan",
-      "kel_usia",
-      "link_foto_am",
-      "am_aktif",
-      "tgl_aktif",
-      "tgl_aktif_pro_hire",
-      "tgl_akhir_kontrak_pro_hire",
-      "lama_menjadi_pro_hire",
-      "laptop",
-      "cek_laptop",
-      "nomor_cc",
-      "status_cc",
-      "baju_telkom",
-      "size_baju",
-      "size_jaket",
-    ];
-
-    setLoading(true);
-
-    getAMs(FIELDS)
-      .then((res) => {
-        const data = Array.isArray(res?.data) ? res.data : [];
-        const found = data.find(
-          (r) => String(r.nik_am) === String(nikAm)
-        );
-
-        if (!found) setNotFound(true);
-        setAm(found || null);
-      })
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
-  }, [nikAm]);
 
   if (loading)
     return <p className="text-center py-10">Loading...</p>;
@@ -128,7 +169,8 @@ export default function AMDetail() {
           <Field label="Level AM" value={getVal("level_am")} />
           <Field label="Witel" value={getVal("witel")} />
           <Field label="Region" value={getVal("tr")} />
-          <Field label="BP" value={getVal("bp")} />
+          <Field label="Lokasi Kerja AM" value={getVal("loc_kerja_am")} />
+          <Field label="Telda" value={getVal("telda")} />
           <Field label="Kelompok AM" value={getVal("kel_am")} />
         </div>
       </Card>
@@ -145,7 +187,7 @@ export default function AMDetail() {
           <Field
             label="Usia"
             value={`${getVal("NULL")} ${getVal(
-              "usia_tahun_bulan"
+              "usia_thn_bln_hr"
             )} `}
           />
           <Field label="Kelompok Usia" value={getVal("kel_usia")} />
@@ -165,11 +207,23 @@ export default function AMDetail() {
           />
           <Field
             label="Akhir Kontrak"
-            value={getVal("tgl_akhir_kontrak_pro_hire")}
+            value={getVal("tgl_akhr_pro_hire")}
           />
           <Field
             label="Lama Pro Hire"
-            value={getVal("lama_menjadi_pro_hire")}
+            value={getVal("lama_jadi_pro_hire")}
+          />
+          <Field
+            label="Perpanjangan Pro Hire"
+            value={getVal("perpnjng_pro_hire")}
+          />
+          <Field
+            label="Tanggal Keluar AM"
+            value={getVal("tgl_out_sebagai_am")}
+          />
+          <Field
+            label="Keterangan Keluar AM"
+            value={getVal("ket_out")}
           />
         </div>
       </Card>
@@ -182,10 +236,37 @@ export default function AMDetail() {
           <Field label="Laptop" value={getVal("laptop")} />
           <Field label="Cek Laptop" value={getVal("cek_laptop")} />
           <Field label="Nomor CC" value={getVal("nomor_cc")} />
-          <Field label="Status CC" value={getVal("status_cc")} />
+          <Field label="Status CC" value={getVal("ket_cc")} />
           <Field label="Baju Telkom" value={getVal("baju_telkom")} />
           <Field label="Size Baju" value={getVal("size_baju")} />
           <Field label="Size Jaket" value={getVal("size_jaket")} />
+        </div>
+      </Card>
+
+      {/* INFORMASI PENDIDIKAN */}
+      <Card>
+        <h3 className="font-semibold mb-4">Informasi Pendidikan</h3>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Field label="Pendidikan Terakhir" value={getVal("pendidikan")} />
+          <Field label="Jurusan" value={getVal("jurusan")} />
+          <Field label="Nama Universitas" value={getVal("universitas")} />
+          <Field label="Tahun Lulus" value={getVal("tahun_lulus")} />
+        </div>
+      </Card>
+
+            {/* INFORMASI TAMBAHAN */}
+      <Card>
+        <h3 className="font-semibold mb-4">Informasi Tambahan</h3>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Field label="Sertifikat Training Eksternal" value={getVal("sertf_train_ext")} />
+          <Field label="Link Evidensi Training Eksternal" value={getVal("link_evid_train_ext")} />
+          <Field label="Hobi" value={getVal("hobi")} />
+          <Field label="Bakat" value={getVal("bakat")} />
+          <Field label="No perner ISH AMEX Only" value={getVal("perner_ish_amex_only")} />
+          <Field label="Tanggal NIK Telkom AMEX" value={getVal("tgl_nik_telkom_amex")} />
+          <Field label="Last Update" value={getVal("last_update")} />
         </div>
       </Card>
     </div>
