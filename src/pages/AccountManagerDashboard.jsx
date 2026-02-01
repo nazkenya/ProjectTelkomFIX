@@ -22,7 +22,7 @@ import Card from '../components/ui/Card'
 import StatsCard from '../components/ui/StatsCard'
 import Button from '../components/ui/Button'
 import SearchInput from '../components/ui/SearchInput'
-import Table from '../components/ui/Table' // ✅ gunakan reusable Table
+import Table from '../components/ui/Table'
 
 import ActivityCalendarCompact from '../components/activities/ActivityCalendarCompact'
 import ActivityCardCompact from '../components/activities/ActivityCardCompact'

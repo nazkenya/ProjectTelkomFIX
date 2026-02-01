@@ -29,7 +29,6 @@ const AM_STATUS_OPTIONS = [
   "AM PRO HIRE",
   "AM SME",
   "AM ORGANIK",
-  "AM ORGANIK MD",
 ];
 
 const AM_AKTIF_OPTIONS = ["AKTIF", "NON AKTIF","HOLD"];

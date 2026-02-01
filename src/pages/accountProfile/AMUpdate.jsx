@@ -4,7 +4,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Table from "../../components/ui/Table";
 import { FaEdit } from "react-icons/fa";
-
+import { useMessage } from "../../components/ui/GlobalMessage";
 import { getAMs } from "../../services/amService";
 import { Form } from "react-router-dom";
 
@@ -58,7 +58,18 @@ function FormInput({ label, id, value, onChange, type = "text", options = [] }) 
 }
 
 /* ====================== PAGE ====================== */
+
+
 export default function AMUpdate() {
+  const { showMessage } = useMessage();
+    const confirmAction = (title, message, onConfirm) => {
+      showMessage({
+        type: "confirm",
+        title,
+        message,
+        onConfirm,
+      });
+};
   const [ams, setAms] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -199,50 +210,108 @@ export default function AMUpdate() {
     });
   };
 
-  const handleInsertNew = () => {
-    setSelectedAM(null);
-    setFormData(emptyForm);
-  };
+const getChangedFieldsMessage = () => {
+  if (!selectedAM) return "";
 
-  const handleChange = (e) => {
+  const normalize = (v) =>
+    typeof v === "string" && v.includes("T") ? v.split("T")[0] : v ?? "";
+
+  let changes = [];
+
+  Object.keys(formData).forEach((key) => {
+    const oldVal = normalize(selectedAM[key]);
+    const newVal = normalize(formData[key]);
+
+    if (oldVal.toString() !== newVal.toString()) {
+      const label = key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase()); // bikin label otomatis
+
+      changes.push(
+        `${label}
+Dari : ${oldVal || "-"}
+Menjadi : ${newVal || "-"}`
+      );
+    }
+  });
+
+  return changes.join("\n\n");
+};
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!selectedAM) {
+    showMessage({
+      type: "error",
+      title: "AM Belum Dipilih",
+      message: "Pilih AM dari tabel terlebih dahulu untuk melakukan update.",
+    });
+    return;
+  }
+
+  const changedMessage = getChangedFieldsMessage();
+
+  if (!changedMessage) {
+    showMessage({
+      type: "warning",
+      title: "Tidak Ada Perubahan",
+      message: "Tidak ada perubahan data yang dilakukan.",
+    });
+    return;
+  }
+
+  confirmAction(
+    "Konfirmasi Update Data AM",
+    `Anda melakukan perubahan berikut:\n\n${changedMessage}`,
+    async () => {
+      try {
+        const url = `${API_BASE}/am/${
+          selectedAM.id_sales || selectedAM.nik_am
+        }`;
+
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (!res.ok) throw new Error();
+
+        showMessage({
+          type: "success",
+          title: "Update Berhasil",
+          message: "Data AM berhasil di-update dan dikirim untuk validasi ✅",
+        });
+      } catch (err) {
+        showMessage({
+          type: "error",
+          title: "Gagal Update",
+          message: "Proses gagal. Cek server / jaringan ❌",
+        });
+      }
+    }
+  );
+};
+
+const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleReset = () => {
+  showMessage({
+    type: "confirm",
+    title: "Reset Form",
+    message: "Yakin ingin mengosongkan form update?",
+    onConfirm: () => setFormData(emptyForm),
+  });
+};
 
-    try {
-      const url = selectedAM
-        ? `${API_BASE}/am/${selectedAM.id_sales || selectedAM.nik_am}`
-        : `${API_BASE}/am`;
-
-      const method = selectedAM ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Gagal simpan");
-
-      alert(
-        selectedAM
-          ? "Data AM berhasil di-update dan dikirim untuk validasi."
-          : "Data AM baru berhasil di-insert dan menunggu approval."
-      );
-    } catch (err) {
-      alert("Proses gagal. Cek server / jaringan.");
-    }
-  };
-
-  const handleReset = () => {
-    setFormData(emptyForm);
-  };
 
   /* ====================== TABLE ====================== */
-  const columns = [
+const columns = [
     { key: "id_sales", label: "ID SALES" },
     { key: "nik_am", label: "NIK AM" },
     { key: "nama_am", label: "NAMA AM" },
@@ -253,8 +322,8 @@ export default function AMUpdate() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Update / Insert Account Manager"
-        subtitle="Klik data AM untuk update atau gunakan tombol Insert New AM"
+        title="Update Account Manager"
+        subtitle="Klik dan cari data AM untuk update"
         icon={FaEdit}
       />
 
@@ -272,7 +341,7 @@ export default function AMUpdate() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-lg">
-              {selectedAM ? "Update Data AM" : "Insert New AM"}
+              Update Data AM
             </h3>
             {selectedAM && (
               <p className="text-sm text-neutral-500">
@@ -280,10 +349,6 @@ export default function AMUpdate() {
               </p>
             )}
           </div>
-
-          <Button variant="outline" onClick={handleInsertNew}>
-            + Insert New AM
-          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -291,10 +356,12 @@ export default function AMUpdate() {
             {/*IDENTITAS & STATUS KERJA*/}
             <FormInput label="No Perner ISH AMEX" id="perner_ish_amex_only" value={formData.perner_ish_amex_only} onChange={handleChange} />
             <FormInput label="Tanggal NIK Telkom AMEX" id="tgl_nik_telkm_amex" type="date" value={formData.tgl_nik_telkm_amex} onChange={handleChange} />
+            <FormInput label="ID Sales" id="id_sales" value={formData.id_sales} onChange={handleChange} />
             <FormInput label="NIK AM" id="nik_am" value={formData.nik_am} onChange={handleChange} />
             <FormInput label="Nama AM" id="nama_am" value={formData.nama_am} onChange={handleChange} />
             <FormInput label="No. Telp" id="notel" type="number" value={formData.notel} onChange={handleChange} />
             <FormInput label="Email" id="email" value={formData.email} onChange={handleChange} />
+            <FormInput label="Level AM" id="level_am" value={formData.level_am} onChange={handleChange}/>
             <FormInput
               label="Kel AM"
               id="kel_am"
@@ -317,7 +384,7 @@ export default function AMUpdate() {
               onChange={handleChange}
               type="select"
               options={[
-                "-",
+                "null",
                 "BKO AM",
                 "BKO NON AM",
                 "BKO",
@@ -355,7 +422,7 @@ export default function AMUpdate() {
             <FormInput label="Usia" id="usia" type="number" value={formData.usia} onChange={handleChange} />
 
             <FormInput
-              label="Tanggal Aktif"
+              label="Tanggal AM Aktif"
               id="tgl_aktif"
               type="date"
               value={formData.tgl_aktif}
@@ -393,9 +460,9 @@ export default function AMUpdate() {
 
             <FormInput
               label="Update Perpanjangan Kontrak"
-              id="perpanjng_pro_hire"
+              id="perpnjng_pro_hire"
               type="date"
-              value={formData.perpanjng_pro_hire}
+              value={formData.perpnjng_pro_hire}
               onChange={handleChange}
             />
 
@@ -412,7 +479,7 @@ export default function AMUpdate() {
             <FormInput label="Pendidikan Terakhir" id="pendidikan" value={formData.pendidikan} onChange={handleChange} />
             <FormInput label="Jurusan" id="jurusan" value={formData.jurusan} onChange={handleChange} />
             <FormInput label="Nama Universitas" id="universitas" value={formData.universitas} onChange={handleChange} />
-            <FormInput label="Tahun Lulus" id="tahun_lulus" value={formData.tahun_lulus} onChange={handleChange} />
+            <FormInput label="Tahun Lulus" id="tahun_lulus" type="number" value={formData.tahun_lulus} onChange={handleChange} />
 
             <FormInput label="Laptop" id="laptop" value={formData.laptop} onChange={handleChange} />
             <FormInput
@@ -441,8 +508,37 @@ export default function AMUpdate() {
             <FormInput label="Nomor CC" id="nomor_cc" value={formData.nomor_cc} onChange={handleChange} />
             <FormInput label="Keterangan CC" id="ket_cc" value={formData.ket_cc} onChange={handleChange} />
             <FormInput label="Baju Telkom" id="baju_telkom" value={formData.baju_telkom} onChange={handleChange} />
-            <FormInput label="Size Baju" id="size_baju" value={formData.size_baju} onChange={handleChange} />
-            <FormInput label="Size Jaket" id="size_jaket" value={formData.size_jaket} onChange={handleChange} />
+            <FormInput label="Size Baju" 
+            id="size_baju" 
+            value={formData.size_baju} 
+            onChange={handleChange}
+            type="select"
+            options={[
+              "null",
+              "XS",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "XXL",
+              "XXXL",
+            ]}
+            />
+            <FormInput label="Size Jaket" 
+            id="size_jaket" 
+            value={formData.size_jaket} 
+            onChange={handleChange}
+            type="select"
+            options={[
+              "null",
+              "S",
+              "M",
+              "L",
+              "XL",
+              "XXL",
+              "XXXL",
+            ]}
+            />
 
             {/*LINK & EXPERIENCE/INFORMASI LAINNYA*/}
             <FormInput label="Sertifikat Training Eksternal" id="sertf_train_ext" value={formData.sertf_train_ext} onChange={handleChange} />
@@ -460,7 +556,7 @@ export default function AMUpdate() {
 
             <FormInput label="Skill Bahasa" id="skill_bahasa" value={formData.skill_bahasa} onChange={handleChange} />  
             <FormInput label="Nama Bank" id="nama_bank" value={formData.nama_bank} onChange={handleChange} />  
-            <FormInput label="No. Rekening" id="no_rek" value={formData.no_rek} onChange={handleChange} /> 
+            <FormInput label="No. Rekening" id="no_rek" type ="number" value={formData.no_rek} onChange={handleChange} /> 
 
           </div>
 
@@ -470,7 +566,7 @@ export default function AMUpdate() {
             </Button>
 
             <Button type="submit">
-              {selectedAM ? "Update & Kirim Validasi" : "Insert & Kirim Validasi"}
+              Update data AM
             </Button>
           </div>
         </form>

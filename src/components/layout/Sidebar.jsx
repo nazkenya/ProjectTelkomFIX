@@ -23,35 +23,15 @@ const MENU = {
     { to: '/executive', label: 'Executive Dashboard', icon: FaChartLine },
     { to: '/admin/approval', label: 'User Approval', icon: FaUsers },
     { to: '/manager/approval', label: 'User Approval', icon: FaUsers },
-
-
-  {
+    {
       label: 'ECRM Workspace',
       icon: FaUserTie,
       subMenu: [
         { to: '/ecrm-workspace', label: 'Data AM', icon: FaUserTie },
         { to: '/ecrm-workspace/validation', label: 'Validation AM', icon: FaChartLine },
       ],
+      
     },
-  ],
-
-  sales: [
-    { to: '/', label: 'Beranda', icon: FaHome },
-    { to: '/customers', label: 'Pelanggan', icon: FaUsers },
-    { to: '/contacts', label: 'Kontak', icon: FaAddressBook },
-    { to: '/aktivitas', label: 'Aktivitas', icon: FaCalendarAlt },
-    { to: '/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
-    {
-      label: 'Account Manager',
-      icon: FaUserTie,
-      subMenu: [
-        { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
-        { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
-      ],
-    },
-  ],
-
-  manager: [
     { to: '/manager', label: 'Dashboard Kinerja', icon: FaChartLine },
     { to: '/manager/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
     { to: '/manager/approval', label: 'User Approval', icon: FaUsers },
@@ -61,10 +41,42 @@ const MENU = {
       subMenu: [
         { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
         { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
+        { to: '/profile/am/insert', label: 'Tambah AM Baru', icon: FaChartLine },
       ],
     },
   ],
-}
+
+    sales: [
+      { to: '/', label: 'Beranda', icon: FaHome },
+      { to: '/customers', label: 'Pelanggan', icon: FaUsers },
+      { to: '/contacts', label: 'Kontak', icon: FaAddressBook },
+      { to: '/aktivitas', label: 'Aktivitas', icon: FaCalendarAlt },
+      { to: '/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
+      {
+        label: 'Account Manager',
+        icon: FaUserTie,
+        subMenu: [
+          { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
+          { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
+        ],
+      },
+    ],
+
+    manager: [
+      { to: '/manager', label: 'Dashboard Kinerja', icon: FaChartLine },
+      { to: '/manager/sales-plans', label: 'Sales Plan', icon: FaFileAlt },
+      { to: '/manager/approval', label: 'User Approval', icon: FaUsers },
+      {
+        label: 'Account Manager',
+        icon: FaUserTie,
+        subMenu: [
+          { to: '/profile/am', label: 'Profile AM', icon: FaUserTie },
+          { to: '/profile/am/update', label: 'Update AM', icon: FaChartLine },
+          { to: '/profile/am/insert', label: 'Tambah AM Baru', icon: FaChartLine },
+        ],
+      },
+    ],
+  }
 
 export default function Sidebar() {
   const { user, role, logout } = useAuth()

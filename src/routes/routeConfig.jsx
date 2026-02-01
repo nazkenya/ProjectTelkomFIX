@@ -20,10 +20,11 @@ import SalesPlans from '../pages/SalesPlans'
 import ManagerDashboard from '@pages/ManagerDashboard'
 import ExecutiveRegionPerformance from '@pages/ExecutiveRegionPerformance'
 import AccountManagerDashboard from '../pages/AccountManagerDashboard'
-import AmProfile from '../pages/accountProfile/AmProfile' // Pastikan path ini benar
+import AmProfile from '../pages/accountProfile/AmProfile'
 import AMDetail from '../pages/accountProfile/AMDetail'
 import Register from '../pages/Register'
 import AMUpdate from '../pages/accountProfile/AMUpdate'
+import AMForm from '../pages/accountProfile/AMForm'
 import AdminApproval from "../pages/AdminApproval";
 import ManagerApproval from "../pages/ManagerApproval";
 
@@ -47,7 +48,7 @@ export const routes = [
   // ECRM workspace is admin-only
   { path: '/ecrm-workspace', element: <EcrmWorkspace />, roles: [ROLES.admin] },
   { path: '/ecrm-workspace/validation', element: <ValidationPage />, roles: [ROLES.admin] },
-  // Manager specific tracking dashboard
+  // Manager/Admin specific tracking dashboard
   { path: '/manager', element: <ManagerPerformanceDashboard />, roles: [ROLES.manager, ROLES.admin] },
   { path: '/manager/performance', element: <ManagerPerformanceDashboard />, roles: [ROLES.manager, ROLES.admin] },
   { path: '/manager/account-managers', element: <AccountManagers />, roles: [ROLES.manager, ROLES.admin] },
@@ -58,6 +59,8 @@ export const routes = [
   { path: '/profile/am', element: <AmProfile />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/detail', element: <AMDetail />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
   { path: '/profile/am/update', element: <AMUpdate />, roles: [ROLES.admin, ROLES.sales, ROLES.manager] },
+  { path: '/profile/am/insert', element: <AMForm />, roles: [ROLES.admin, ROLES.manager] },
+
   // --- APPROVAL SYSTEM ---
   { path: '/admin/approval', element: <AdminApproval />, roles: [ROLES.admin] },
   { path: '/manager/approval', element: <ManagerApproval />, roles: [ROLES.manager, ROLES.admin] },
