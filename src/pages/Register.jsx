@@ -53,15 +53,32 @@ export default function Register() {
     setForm(prev => ({ ...prev, [key]: value }));
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+async function handleSubmit(e) {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
 
-    if (form.password !== form.confirmPassword) {
-      setError("Password tidak cocok");
-      return;
-    }
+  // 🔹 VALIDASI PASSWORD (sesuai requirement)
+  // 1. Minimal 8 karakter
+  if (form.password.length < 8) {
+    setError("Password minimal 8 karakter");
+    return;
+  }
+
+  if (!/[A-Z]/.test(form.password)) {
+    setError("Password harus mengandung minimal 1 huruf kapital (A-Z)");
+    return;
+  }
+
+  if (!/[^A-Za-z0-9\s]/.test(form.password)) {
+    setError("Password harus mengandung minimal 1 karakter khusus (contoh: !, @, #, $, %, dll)");
+    return;
+  }
+
+  if (form.password !== form.confirmPassword) {
+    setError("Password tidak cocok");
+    return;
+  }
 
     setLoading(true);
 
@@ -88,13 +105,13 @@ export default function Register() {
       <div className="w-full max-w-md">
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow p-8 space-y-4">
 
-          <h2 className="text-xl font-semibold text-center">Create Account</h2>
+          <h2 className="text-xl font-semibold text-center">​Create Account</h2>
 
           {error && <div className="bg-red-100 text-red-700 p-2 rounded">{error}</div>}
           {success && <div className="bg-green-100 text-green-700 p-2 rounded">{success}</div>}
 
           <Field label="Full Name" icon={<FaIdBadge />} value={form.fullName} onChange={v => update("fullName", v)} />
-          <Field label="Username" icon={<FaUser />} value={form.username} onChange={v => update("username", v)} />
+          <Field label="NIK" icon={<FaUser />} value={form.username} onChange={v => update("username", v)} />
           <Field label="Email" type="email" icon={<FaEnvelope />} value={form.email} onChange={v => update("email", v)} />
           <Field label="Phone" icon={<FaPhone />} value={form.phone} onChange={v => update("phone", v)} />
 
@@ -108,7 +125,6 @@ export default function Register() {
               required
             >
               <option value="">-- pilih --</option>
-              <option value="admin">Admin</option>
               <option value="manager">Manager</option>
               <option value="account_manager">Account Manager</option>
               <option value="sales">Sales</option>

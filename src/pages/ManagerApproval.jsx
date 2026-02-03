@@ -164,8 +164,8 @@ export default function ManagerApproval() {
     <div className="space-y-6 animate-fade-in">
       <PageHeader
         variant="hero"
-        title="Manager Approval"
-        subtitle="Persetujuan Account Manager & Sales"
+        title="Manager Dashboard Request User Approval"
+        subtitle="Persetujuan pembuatan akun baru"
         icon={FaUserTie}
       />
 

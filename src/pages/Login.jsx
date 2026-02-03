@@ -73,7 +73,7 @@ export default function Login() {
           )}
 
           <div>
-            <label className="text-sm font-medium">Username</label>
+            <label className="text-sm font-medium">NIK</label>
             <input
               className="w-full border p-2 rounded mt-1"
               value={username}
@@ -103,12 +103,12 @@ export default function Login() {
           </button>
 
           <div className="pt-4 border-t border-neutral-200 text-center">
-            <p className="text-sm text-neutral-500">
+            <a href="https://t.me/dimassyfllh" target="_blank" className="text-sm text-neutral-500">
               Don’t have an account?{" "}
-              <Link to="/register" className="text-[#E60012] font-semibold hover:underline">
-                Register
-              </Link>
-            </p>
+              <span className="text-[#E60012] font-semibold hover:underline cursor-pointer">
+                📩 Chat Admin via Telegram to Register
+              </span>
+            </a>
           </div>
         </form>
 

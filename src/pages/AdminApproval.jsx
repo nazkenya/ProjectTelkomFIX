@@ -161,8 +161,8 @@ export default function AdminApproval() {
     <div className="space-y-6 animate-fade-in">
       <PageHeader
         variant="hero"
-        title="Admin Approval"
-        subtitle="Persetujuan akun Manager dan Sales"
+        title="Admin Dashboard Request User Approval"
+        subtitle="Persetujuan pembuatan akun baru"
         icon={FaUserCheck}
       />
 
