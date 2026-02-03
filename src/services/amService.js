@@ -1,4 +1,6 @@
-import { fetchAMList, fetchAMDetail, postAM } from "./amRepository";
+// src/services/amService.js
+
+import { fetchAMList, fetchAMDetail, postAM, putAM } from "./amRepository";
 
 /* =========================
    GET LIST AM
@@ -36,7 +38,23 @@ export async function createAM(payload) {
 }
 
 /* =========================
-   GET DETAIL AM (FIXED)
+   UPDATE AM
+========================= */
+export async function updateAM(id, payload) {
+  console.log("📡 [Service] updateAM called:", { id, payload });
+
+  try {
+    const res = await putAM(id, payload);
+    console.log("✅ [Service] updateAM success:", res);
+    return res;
+  } catch (error) {
+    console.error("❌ [Service] updateAM failed:", error);
+    throw error;
+  }
+}
+
+/* =========================
+   GET DETAIL AM
 ========================= */
 export async function getAMDetail({ nik, idSales }) {
   try {

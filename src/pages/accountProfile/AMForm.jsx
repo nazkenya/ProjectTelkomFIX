@@ -103,7 +103,7 @@ export default function AMInsert() {
     fase_laptop: "",
     ket_kerusakan_laptop: "",
     tgl_terima_laptop: "",
-    link_ba_laptop: "",
+    link_ba_laptop_am: "",
     nomor_cc: "",
     ket_cc: "",
     baju_telkom: "",
@@ -201,7 +201,7 @@ const fieldLabels = {
   fase_laptop: "Fase Laptop",
   ket_kerusakan_laptop: "Keterangan Kerusakan Laptop",
   tgl_terima_laptop: "Tanggal Terima Laptop",
-  link_ba_laptop: "Link BA Laptop",
+  link_ba_laptop_am: "Link BA Laptop",
   nomor_cc: "Nomor CC",
   ket_cc: "Keterangan CC",
   baju_telkom: "Baju Telkom",
@@ -319,7 +319,7 @@ const handleSubmit = async (e) => {
             <FormInput label="ID Sales" id="id_sales" value={formData.id_sales} disabled/>
             <FormInput label="NIK AM" id="nik_am" value={formData.nik_am} onChange={handleChange}/>
             <FormInput label="Nama AM" id="nama_am" value={formData.nama_am} onChange={handleChange}/>
-            <FormInput label="No Telp" id="notel" type="number" value={formData.notel} onChange={handleChange}/>
+            <FormInput label="No Telp" id="notel" type="text" value={formData.notel} onChange={handleChange}/>
             <FormInput label="Email" id="email" value={formData.email} onChange={handleChange}/>
             <FormInput label="Level AM" id="level_am" value={formData.level_am} onChange={handleChange}/>
 
@@ -479,7 +479,7 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
             />
 
-            <FormInput label="Link BA Laptop" id="link_ba_laptop" value={formData.link_ba_laptop} onChange={handleChange}/>
+            <FormInput label="Link BA Laptop" id="link_ba_laptop_am" value={formData.link_ba_laptop_am} onChange={handleChange}/>
             <FormInput label="Nomor CC" id="nomor_cc" value={formData.nomor_cc} onChange={handleChange}/>
             <FormInput 
             label="Ket CC" 
