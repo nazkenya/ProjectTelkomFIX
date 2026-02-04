@@ -162,6 +162,14 @@ const confirmAction = (title, message, onConfirm) => {
     setFormData((p) => ({ ...p, [id]: value }));
   };
 
+  const trToWitelMap = {
+  TR1: ["ACEH", "LAMPUNG BENGKULU", "RIAU", "SUMBAGSEL", "SUMBAR JAMBI", "SUMUT"],
+  TR2: ["BANDUNG", "BANTEN", "BEKASI KARAWANG", "JAKARTA CENTRUM", "JAKARTA INNER", "JAKARTA OUTER", "PRIANGAN BARAT", "PRIANGAN TIMUR"],
+  TR3: ["BALI", "JATIM BARAT", "JATIM TIMUR", "NUSA TENGGARA", "SEMARANG JATENG UTARA", "SOLO JATENG TIMUR", "SURAMADU", "YOGYA JATENG SELATAN"],
+  TR4: ["BALIKPAPAN", "KALBAR", "KALSELTENG", "KALTIMTARA"],
+  TR5: ["PAPUA", "PAPUA BARAT", "SULBAGSEL", "SULBAGTENG", "SUMALUT"]
+};
+
 const fieldLabels = {
   // IDENTITAS & STATUS KERJA
   perner_ish_amex_only: "No Perner ISH AMEX",
@@ -243,8 +251,8 @@ const handleReset = () => {
       setFormData(initialForm);
       showMessage({
         type: "success",
-        title: "Berhasil",
-        message: "Form berhasil dikosongkan.",
+        title: "✅ Berhasil",
+        message: "Form berhasil dikosongkan  👋",
       });
     }
   );
@@ -256,11 +264,139 @@ const handleSubmit = async (e) => {
   if (!formData.id_sales) {
     showMessage({
       type: "error",
-      title: "Gagal",
-      message: "ID Sales belum terbentuk.",
+      title: "❌ Gagal",
+      message: "ID Sales belum terbentuk❗",
     });
     return;
   }
+
+    if (!formData.nama_am || formData.nama_am.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Nama AM wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.email || formData.email.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Email wajib diisi❗",
+      });
+      return;
+  }
+
+    if (!formData.notel || formData.notel.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "No. Telp wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.telda || formData.telda.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Telda wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.loc_kerja_am || formData.loc_kerja_am.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Lokasi Kerja AM wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.level_am || formData.level_am.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Level AM wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.kel_am || formData.kel_am.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Kel AM wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.bp || formData.bp.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "BP wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.bko || formData.bko.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "BKO wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.tr || formData.tr.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Regional wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.witel || formData.witel.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Witel wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.tgl_lahir || formData.tgl_lahir.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Tanggal Lahir wajib diisi❗",
+      });
+    return;
+  }
+
+
+      if (!formData.tgl_aktif || formData.tgl_aktif.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Tanggal Aktif AM wajib diisi❗",
+      });
+    return;
+  }
+
+    if (!formData.am_aktif || formData.am_aktif.trim() === '') {
+      showMessage({
+        type: "error",
+        title: "❌ Gagal",
+        message: "Status AM wajib diisi❗",
+      });
+    return;
+  }
+
 
   confirmAction(
     "Konfirmasi Tambah AM",
@@ -283,14 +419,14 @@ const handleSubmit = async (e) => {
         await createAM(formData);
         showMessage({
           type: "success",
-          title: "Berhasil",
+          title: "✅ Berhasil",
           message: "Data AM berhasil ditambahkan.",
         });
         navigate("/profile/am");
       } catch {
         showMessage({
           type: "error",
-          title: "Gagal",
+          title: "❌Gagal",
           message: "Terjadi kesalahan saat menyimpan data.",
         });
       }
@@ -301,11 +437,11 @@ const handleSubmit = async (e) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
         <PageHeader
-        title="Add New Account Manager"
+        title="➕ Add New Account Manager"
         subtitle={formData.nama_am || "-"}
         right={
             <Button type="button" variant="green" onClick={() => navigate(-1)}>
-            <FaArrowLeft className="mr-2" /> Kembali
+            <FaArrowLeft className="mr-2" /> 🏠︎ Kembali
             </Button>
         }
         />
@@ -318,18 +454,32 @@ const handleSubmit = async (e) => {
             <FormInput label="Tanggal NIK Telkom AMEX" id="tgl_nik_telkm_amex" type="date" value={formData.tgl_nik_telkm_amex} onChange={handleChange}/>
             <FormInput label="ID Sales" id="id_sales" value={formData.id_sales} disabled/>
             <FormInput label="NIK AM" id="nik_am" value={formData.nik_am} onChange={handleChange}/>
-            <FormInput label="Nama AM" id="nama_am" value={formData.nama_am} onChange={handleChange}/>
-            <FormInput label="No Telp" id="notel" type="text" value={formData.notel} onChange={handleChange}/>
-            <FormInput label="Email" id="email" value={formData.email} onChange={handleChange}/>
-            <FormInput label="Level AM" id="level_am" value={formData.level_am} onChange={handleChange}/>
-
+            <FormInput
+              label="Nama AM"
+              id="nama_am"
+              value={formData.nama_am}
+              onChange={handleChange}
+              required
+            />
+            <FormInput label="No Telp" id="notel" type="text" value={formData.notel} onChange={handleChange} required/>
+            <FormInput label="Email" id="email" value={formData.email} onChange={handleChange} required/>
+            <FormInput
+            label="Level AM"
+            id="level_am"
+            value={formData.level_am}
+            onChange={handleChange}
+            type="select"
+            options={["SAM","AM","AM1","AM2","AM3"]}
+            required
+            />
             <FormInput
             label="Kel AM"
             id="kel_am"
             value={formData.kel_am}
             onChange={handleChange}
             type="select"
-            options={["AM SME","AM Pro Hire","AM Organik","AM Organik MD"]}
+            options={["AM SME","AM Pro Hire","AM Organik","AM Organik MULTIDIIVISI", "AM SME MULTIDIIVISI", "AM PRO HIRE MULTIDIIVISI"]}
+            required
             />
 
             <FormInput
@@ -339,6 +489,7 @@ const handleSubmit = async (e) => {
             onChange={handleChange}
             type="select"
             options={["null","1","2","3","4","5","6","7"]}
+            required
             />
 
             <FormInput
@@ -348,30 +499,33 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
               type="select"
               options={[
-                "null",
-                "BKO AM",
-                "BKO NON AM",
-                "BKO",
+                "YES",
+                "NO",
               ]}
+              required
             />
-            <FormInput label="Witel" id="witel" value={formData.witel} onChange={handleChange}/>
             <FormInput
               label="Regional"
               id="tr"
               value={formData.tr}
               onChange={handleChange}
               type="select"
-              options={[
-                "null",
-                "TR1",
-                "TR2",
-                "TR3",
-                "TR4",
-                "TR5",
-              ]}
+              options={["null", "TR1", "TR2", "TR3", "TR4", "TR5"]}
+              required
             />
-            <FormInput label="Telda" id="telda" value={formData.telda} onChange={handleChange}/>
-            <FormInput label="Lokasi Kerja" id="loc_kerja_am" value={formData.loc_kerja_am} onChange={handleChange}/>
+
+            <FormInput
+              label="Witel"
+              id="witel"
+              value={formData.witel}
+              onChange={handleChange}
+              type="select"
+              options={formData.tr && formData.tr !== "null" ? trToWitelMap[formData.tr] : []}
+              required
+              disabled={!formData.tr || formData.tr === "null"}
+            />
+            <FormInput label="Telda" id="telda" value={formData.telda} onChange={handleChange} required/>
+            <FormInput label="Lokasi Kerja" id="loc_kerja_am" value={formData.loc_kerja_am} onChange={handleChange} required/>
             <FormInput
               label="Gender"
               id="gender"
@@ -382,6 +536,7 @@ const handleSubmit = async (e) => {
                 "L",
                 "P",
               ]}
+              required
             />
 
             <FormInput
@@ -390,9 +545,8 @@ const handleSubmit = async (e) => {
               type="date"
               value={formData.tgl_lahir}
               onChange={handleChange}
+              required
             />
-
-            <FormInput label="Usia" id="usia" type="number" value={formData.usia} onChange={handleChange}/>
             
             <FormInput
               label="Tanggal AM Aktif"
@@ -400,6 +554,7 @@ const handleSubmit = async (e) => {
               type="date"
               value={formData.tgl_aktif}
               onChange={handleChange}
+              required
             />
 
             <FormInput
@@ -410,41 +565,8 @@ const handleSubmit = async (e) => {
               type="select"
               options={[
                 "AKTIF",
-                "NON AKTIF",
               ]}
-            />
-
-            <FormInput
-              label="Tanggal Out AM"
-              id="tgl_out_sebagai_am"
-              type="date"
-              value={formData.tgl_out_sebagai_am}
-              onChange={handleChange}
-            />
-
-            <FormInput label="Keterangan Out" id="ket_out" value={formData.ket_out} onChange={handleChange}/>
-            <FormInput
-              label="Tanggal Aktif Pro Hire"
-              id="tgl_aktif_pro_hire"
-              type="date"
-              value={formData.tgl_aktif_pro_hire}
-              onChange={handleChange}
-            />
-
-            <FormInput
-              label="Update Perpanjangan Kontrak"
-              id="perpanjng_pro_hire"
-              type="date"
-              value={formData.perpanjng_pro_hire}
-              onChange={handleChange}
-            />
-
-            <FormInput
-              label="Tanggal Akhir Pro Hire"
-              id="tgl_akhr_pro_hire"
-              type="date"
-              value={formData.tgl_akhr_pro_hire}
-              onChange={handleChange}
+              required
             />
 
             {/* PENDIDIKAN */}
@@ -454,7 +576,7 @@ const handleSubmit = async (e) => {
             <FormInput label="Tahun Lulus" id="tahun_lulus" type="number" value={formData.tahun_lulus} onChange={handleChange}/>
 
             {/* ASET */}
-            <FormInput label="Laptop" id="laptop" value={formData.laptop} onChange={handleChange}/>
+           <FormInput label="Jenis Laptop" id="laptop" value={formData.laptop} onChange={handleChange}/>
             <FormInput
               label="CEK Laptop"
               id="cek_laptop"
@@ -467,9 +589,6 @@ const handleSubmit = async (e) => {
                
               ]}
             />  
-
-            <FormInput label="Fase Laptop" id="fase_laptop" value={formData.fase_laptop} onChange={handleChange}/>
-            <FormInput label="Ket Kerusakan Laptop" id="ket_kerusakan_laptop" value={formData.ket_kerusakan_laptop} onChange={handleChange}/>
             
             <FormInput
               label="Tanggal Terima Laptop"
@@ -556,11 +675,11 @@ const handleSubmit = async (e) => {
 
           <div className="flex justify-end gap-4 pt-6 border-t">
             <Button type="button" variant="ghost" onClick={handleReset}>
-              Reset
+              🔄️Reset
             </Button>
 
             <Button type="submit">
-              Tambah data AM
+              💾 Tambah data AM
             </Button>
         </div>
         </Card>

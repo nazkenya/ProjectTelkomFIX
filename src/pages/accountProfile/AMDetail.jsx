@@ -1,7 +1,8 @@
 // src/pages/AMDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { FaUserTie, FaArrowLeft } from "react-icons/fa";
+import { FaUserTie, FaArrowLeft,FaEdit } from "react-icons/fa";
+
 
 import PageHeader from "../../components/ui/PageHeader";
 import Card from "../../components/ui/Card";
@@ -147,12 +148,22 @@ export default function AMDetail() {
           title="Detail Account Manager"
           subtitle={getVal("nama_am")}
           icon={FaUserTie}
-          right={
+        right={
+          <div className="flex gap-2">
+            {/* BUTTON UPDATE*/}
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(`/profile/am/update?idsales=${idSales}`)}
+            >
+              <FaEdit className="mr-2" /> Update
+            </Button>
+            
             <Button variant="ghost" onClick={() => navigate(-1)}>
               <FaArrowLeft className="mr-2" /> Kembali
             </Button>
-          }
-        />
+          </div>
+        }
+      />
 
       {/* PROFILE */}
       <Card className="flex gap-6 items-center">
@@ -206,7 +217,7 @@ export default function AMDetail() {
             value={getVal("tgl_aktif_pro_hire")}
           />
           <Field
-            label="Akhir Kontrak"
+            label="Akhir Kontrak Pro Hire"
             value={getVal("tgl_akhr_pro_hire")}
           />
           <Field

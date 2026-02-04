@@ -1,5 +1,4 @@
-// Declare known roles in one place.
-// Add your new role here, e.g., 'manager' or 'bud' — keep it consistent across config.
+
 export const ROLES = {
   sales: 'sales',
   manager: 'manager',
@@ -7,7 +6,7 @@ export const ROLES = {
 }
 
 export const ROLE_LABELS = {
-  [ROLES.admin]: 'Top-Level Manager',
+  [ROLES.admin]: 'ADMINISTRATOR',
   [ROLES.sales]: 'Account Manager',
   [ROLES.manager]: 'Manager Business Service',
 }

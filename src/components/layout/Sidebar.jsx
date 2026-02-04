@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+// Tambahkan di bagian atas file
+import telkomLogo from '../../assets/TELKOM.png';
 import {
   FaHome,
   FaChartLine,
@@ -15,7 +17,6 @@ import {
 } from 'react-icons/fa'
 import { useAuth } from '../../auth/AuthContext'
 
-// 🔥 MENU SEKARANG LANGSUNG MENGGUNAKAN STRING ROLE DARI DATABASE
 const MENU = {
   base: [],
 
@@ -81,7 +82,7 @@ const MENU = {
 export default function Sidebar() {
   const { user, role, logout } = useAuth()
 
-  // 👉 user belum login → sidebar tidak muncul
+
   if (!user) return null
 
   const roleItems = MENU[role] || []
@@ -97,20 +98,24 @@ export default function Sidebar() {
     <nav className="fixed left-0 top-0 w-[240px] h-[100dvh] bg-[#0F162A] text-white/80 flex flex-col py-4 z-40">
       
       {/* HEADER */}
-      <div className="px-4 mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-white/5 grid place-items-center ring-1 ring-white/10 text-white font-semibold">
-            M
-          </div>
-          <div>
-            <div className="text-white font-semibold">KAMS</div>
-            <div className="text-white/50 text-[11px]">
-              Key Account Management System
+        <div className="px-4 mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-13 h-10 rounded-xl">
+              <img 
+                src={telkomLogo} 
+                alt="Telkom" 
+                className="w-20 h-12 rounded-xl bg-white/a5 object-cover"
+              />
+            </div>
+            <div>
+              <div className="text-white font-semibold">KAMS</div>
+              <div className="text-white/50 text-[11px]">
+                Key Account Management System
+              </div>
             </div>
           </div>
+          <FaChevronDown className="text-white/50" />
         </div>
-        <FaChevronDown className="text-white/50" />
-      </div>
 
       <div className="h-px bg-white/10 mx-4" />
 

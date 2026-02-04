@@ -7,8 +7,8 @@ import mockNotifications from '../../data/mockNotifications'
 export default function Header() {
   const { user, role } = useAuth()
 
-  const displayName = user?.nama_lengkap || user?.name || 'Guest'
-  const initial = displayName?.charAt(0)?.toUpperCase() || 'G'
+  const displayName = user?.nama_lengkap || user?.name 
+  const initial = displayName?.charAt(0)?.toUpperCase()
 
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState([])
